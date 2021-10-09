@@ -4,7 +4,7 @@ name: Build tModLoader
 on:
   # This workflow runs when a push to 1.4 branch happens, or when a label is added to a pull request targetting 1.4 branch.
   push:
-    branches: [1.4, 1.4_mergedtesting]
+    branches: [1.4, 1.4_mergedtesting, 1.4_examplemodslntest]
   pull_request_target:
     types: [labeled]
     branches: [1.4, 1.4_mergedtesting]
@@ -127,6 +127,8 @@ jobs:
           7z a decompiled.zip ./src/decompiled/
           gpg --quiet --batch --yes --symmetric --cipher-algo AES256 --passphrase="$SETUP_ASSETS_PASSPHRASE" decompiled.zip
           ls -l
+          ls -l 1423
+          ls -l 1423/Windows
         env:
           SETUP_ASSETS_PASSPHRASE: ${{ secrets.SETUP_ASSETS_PASSPHRASE }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
@@ -158,15 +160,40 @@ jobs:
         run: |
           echo Adding build info to ExampleMod displayName
           echo "displayName = Example Mod (${GITHUB_REF##*/}-${{ github.sha }})" >> ./ExampleMod/build.txt
-          cd artifacts/Debug
-          mkdir -p ModLoader/Mods
-          echo pwd is: ${PWD}
-          echo Building ExampleMod
-          dotnet tModLoader.dll -server -build ../../ExampleMod -tmlsavedirectory ./ModLoader
-          cd ../..
-          mkdir -p artifacts/Mods
-          mv ./artifacts/Debug/ModLoader/Mods/ExampleMod.tmod ./artifacts/Mods/ExampleMod.tmod
+          basedir=$(pwd) #pwd gives an absolute path, required for -tmlsavedirectory as the build command is executed from the steam/deployment dir
+          echo pwd is: $basedir
+          ModloaderDir=$basedir/artifacts/Debug/ModLoader
+          echo ModloaderDir is: $ModloaderDir
+          mkdir -p $ModloaderDir
           
+          echo Extracting artifacts/Debug to 1423/Windows
+          mkdir -p 1423/Windows
+          cp -r artifacts/Debug/* 1423/Windows
+          
+          echo Building ExampleMod
+          export ExtraBuildModFlags="-tmlsavedirectory $ModloaderDir"
+          echo ExtraBuildModFlags is: $ExtraBuildModFlags
+          
+          set -x
+          ls -l
+          ls -l 1423
+          ls -l 1423/Windows
+          
+          echo Building Terraria
+          dotnet build src/tModLoader/Terraria/Terraria.csproj --nologo -v q /clp:ErrorsOnly
+          
+          echo 
+          ls -l
+          ls -l 1423
+          ls -l 1423/Windows
+          
+          dotnet build ExampleMod/ExampleMod.csproj --nologo -v q /clp:ErrorsOnly
+          mkdir -p artifacts/Mods
+          mv $ModloaderDir/Mods/ExampleMod.tmod artifacts/Mods/ExampleMod.tmod
+          
+          echo Testing Example Mod build from "Mod Sources" dir  
+          cd $ModloaderDir/Mod Sources/ExampleMod
+          dotnet build ExampleMod.csproj --nologo -v q
       - name: Upload ExampleMod Build Artifact
         uses: actions/upload-artifact@v2
         with:
