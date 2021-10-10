@@ -170,13 +170,18 @@ jobs:
           export ExtraBuildModFlags="-tmlsavedirectory $ModloaderDir"
           echo ExtraBuildModFlags is: $ExtraBuildModFlags
           
+          ls -l src
+          cat src/WorkspaceInfo.targets
+          
           echo Building Terraria
           dotnet build src/tModLoader/Terraria/Terraria.csproj --nologo -v q /clp:ErrorsOnly
           
           ls -l 1423/Windows
           
           echo Test command
+          cd 1423/Windows
           dotnet tModLoader.dll -server -build D:\a\tModLoader\tModLoader\ExampleMod -eac D:\a\tModLoader\tModLoader\ExampleMod\bin\Debug\net5.0\ExampleMod.dll -tmlsavedirectory D:\a\tModLoader\tModLoader\artifacts\Debug\ModLoader
+          cd ../..
           
           echo dotnet build
           dotnet build ExampleMod/ExampleMod.csproj --nologo -v q /clp:ErrorsOnly
