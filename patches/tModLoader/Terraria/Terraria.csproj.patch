@@ -1,6 +1,6 @@
 --- src/Terraria/Terraria/Terraria.csproj
 +++ src/tModLoader/Terraria/Terraria.csproj
-@@ -2,69 +_,151 @@
+@@ -2,69 +_,153 @@
    <Import Project="../Configuration.targets" />
    <Import Project="../../WorkspaceInfo.targets" />
    <PropertyGroup>
@@ -21,6 +21,7 @@
 +    <AssemblyName>tModLoader</AssemblyName>
 +    <GenerateDocumentationFile>true</GenerateDocumentationFile>
 +    <UseAppHost>false</UseAppHost>
++	<NoWarn>CA1416,CS1573,CS0618,CS0612,CS0219,CS0169</NoWarn>
 +  </PropertyGroup>
 +  <PropertyGroup>
 +    <tMLVersion>0.12</tMLVersion>
@@ -110,7 +111,9 @@
      <ItemGroup>
        <BinFiles Include="$(TargetDir)**" />
      </ItemGroup>
-     <Message Text="Copying $(AssemblyName) to Steam Dir..." Importance="high" />
+-    <Message Text="Copying $(AssemblyName) to Steam Dir..." Importance="high" />
++	<Message Text="Copying $(AssemblyName) to Steam Dir..." Importance="high" />
++	<Message Text="Steam Dir... $([System.IO.Path]::GetFullPath('$(tModLoaderSteamPath)'))" Importance="high" />
 -    <Copy SourceFiles="@(BinFiles)" DestinationFolder="$(TerrariaSteamPath)/%(RecursiveDir)" />
 +    <Copy SourceFiles="@(BinFiles)" DestinationFolder="$(tModLoaderSteamPath)/%(RecursiveDir)" SkipUnchangedFiles="True" />
 +    <!-- todo, purge old libraries on other platforms -->
