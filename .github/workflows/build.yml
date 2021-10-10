@@ -166,27 +166,19 @@ jobs:
           echo ModloaderDir is: $ModloaderDir
           mkdir -p $ModloaderDir
           
-          echo Extracting artifacts/Debug to 1423/Windows
-          mkdir -p 1423/Windows
-          cp -r artifacts/Debug/* 1423/Windows
-          
           echo Building ExampleMod
           export ExtraBuildModFlags="-tmlsavedirectory $ModloaderDir"
           echo ExtraBuildModFlags is: $ExtraBuildModFlags
           
-          set -x
-          ls -l
-          ls -l 1423
-          ls -l 1423/Windows
-          
           echo Building Terraria
           dotnet build src/tModLoader/Terraria/Terraria.csproj --nologo -v q /clp:ErrorsOnly
           
-          echo 
-          ls -l
-          ls -l 1423
           ls -l 1423/Windows
           
+          echo Test command
+          dotnet tModLoader.dll -server -build D:\a\tModLoader\tModLoader\ExampleMod -eac D:\a\tModLoader\tModLoader\ExampleMod\bin\Debug\net5.0\ExampleMod.dll -tmlsavedirectory D:\a\tModLoader\tModLoader\artifacts\Debug\ModLoader
+          
+          echo dotnet build
           dotnet build ExampleMod/ExampleMod.csproj --nologo -v q /clp:ErrorsOnly
           mkdir -p artifacts/Mods
           mv $ModloaderDir/Mods/ExampleMod.tmod artifacts/Mods/ExampleMod.tmod
