@@ -174,8 +174,9 @@ jobs:
           cat src/WorkspaceInfo.targets
           
           echo Building Terraria
-          dotnet build src/tModLoader/Terraria/Terraria.csproj --nologo -v q /clp:ErrorsOnly
+          dotnet build src/tModLoader/Terraria/Terraria.csproj --nologo /clp:ErrorsOnly
           
+          echo Done
           ls -l 1423/Windows
           
           echo Test command
